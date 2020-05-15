@@ -1,0 +1,11 @@
+lambda_function.zip
+.idea
+dist
+v-env
+.terraform
+terraform.auto.tfvars
+venv
+terraform.tfstate
+terraform.tfstate.backup
+kubeconfig_*
+autoscaler-values.yaml
