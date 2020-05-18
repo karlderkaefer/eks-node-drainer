@@ -1,0 +1,21 @@
+podDisruptionBudget:
+  minAvailable: 3
+#replicas: 30
+replicas: 6
+testFramework:
+  enabled: false
+resources:
+  requests:
+    cpu: 200m
+    memory: 128Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+initChownData:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

@@ -55,13 +55,18 @@ helm repo update
 # https://docs.aws.amazon.com/eks/latest/userguide/cni-upgrades.html
 kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.6/config/v1.6/aws-k8s-cni.yaml
 
+# install metrics server to watch node resource allocation
+helm upgrade --install metrics stable/metrics-server
+
 # install grafana
-helm upgrade --install grafana --set podDisruptionBudget.minAvailable=3 --set replicas=6 --namespace default stable/grafana
+helm upgrade --install grafana -f k8s/grafana.yaml --namespace default stable/grafana
 
 kubectl get pods
 ```
-* change version number of `worker_ami_name_filter` in [main.tf](modules/eks/main.tf)
-* apply terraform again pod should be drained gracefully
+* change version number of the ami version of nodes to see node drainer in action
+```
+terraform apply -var ami_version=v20200406
+```
 
 # autoscaler
 ```
@@ -99,8 +104,8 @@ kubectl logs -l app.kubernetes.io/instance=cluster-autoscaler -f -n kube-system
 
 # stateful set
 ```
-helm upgrade --install solr --namespace default incubator/solr
-helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
-helm repo update
+helm upgrade --install solr --namespace default incubator/solr -f k8s/solr-values.yaml
+# check that volumes are allocated in different regions
+kubectl get pv -o custom-columns=PVC-NAME:.spec.claimRef.name,REGION:.metadata.labels
 ```
 

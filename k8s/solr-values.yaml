@@ -1,0 +1,12 @@
+javaMem: "-Xms512m -Xmx512m"
+replicaCount: 2
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 300m
+  limits:
+    memory: 768Mi
+    cpu: 300m
+volumeClaimTemplates:
+  storageSize: 1Gi
+

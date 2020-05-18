@@ -39,6 +39,6 @@ variable "ami_version" {
 }
 
 variable "asg_hook_timeout" {
-  default = 360
+  default = 600
   description = "timeout in sec to wait until lifecycle is completed"
 }

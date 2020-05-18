@@ -132,6 +132,7 @@ module "eks" {
     asg_max_size = 5
     asg_desired_capacity = 1
     asg_recreate_on_change = true
+    kubelet_extra_args        = "--system-reserved=cpu=100m,memory=100Mi,ephemeral-storage=1Gi --kube-reserved=cpu=100m,memory=200Mi,ephemeral-storage=1Gi --eviction-hard=memory.available<100Mi,nodefs.available<5% --enforce-node-allocatable=pods"
     asg_initial_lifecycle_hooks = [
       {
         name = "node-drainer-${var.cluster_name}"
@@ -166,7 +167,6 @@ module "eks" {
       name = "worker-group-2"
       subnets = [
         data.aws_subnet.subnets_per_zone[data.aws_availability_zones.available.names[1]].id
-//        module.vpc.private_subnets[1]
       ]
     }
   ]
