@@ -1,3 +1,14 @@
+//locals {
+//  # defines the suitable cluster autoscaler version
+//  # needs to be update regularly
+//  # tags of https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler
+//  # always one version behind
+//  cluster_autoscaler_version = {
+//    "1.16" = "v1.16.4"
+//    "1.15" = "v1.15.5"
+//  }
+//}
+
 module "iam_assumable_role_admin" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "~> v2.9.0"
@@ -55,3 +66,28 @@ data "aws_iam_policy_document" "cluster_autoscaler" {
     }
   }
 }
+
+data "helm_repository" "stable" {
+  name = "stable"
+  url  = "https://kubernetes-charts.storage.googleapis.com"
+}
+
+resource "helm_release" "cluster-autoscaler" {
+  name = "cluster-autoscaler"
+  repository = data.helm_repository.stable.metadata[0].name
+  chart = "cluster-autoscaler"
+  namespace = "kube-system"
+  values = [
+    templatefile(
+    "${path.module}/cluster-autoscale-values.tpl", {
+      REGION = var.region,
+      ACCOUNT_ID = data.aws_caller_identity.current.account_id,
+      CLUSTER_NAME = var.cluster_name
+    })
+  ]
+  depends_on = [
+    module.eks.kubeconfig
+  ]
+}
+
+
